@@ -1,0 +1,15 @@
+{
+  "project": {
+    "name": "My project"
+  },
+  "widget": {
+    "source": "Source",
+    "configure": "Configure a source"
+  },
+  "tool": {
+    "greeting": "Greeting",
+    "say_it": "Say it",
+    "print": "Print",
+    "default_greeting": "Hello Ethos"
+  }
+}

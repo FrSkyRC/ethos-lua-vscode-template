@@ -1,0 +1,47 @@
+name: CI
+
+# On every push and pull request: Lua syntax check (after i18n resolution),
+# Python tooling check, and a test package per language (downloadable from the run).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Lua 5.4
+        run: sudo apt-get update && sudo apt-get install -y lua5.4
+
+      - name: Python tooling compiles
+        run: python -m py_compile .vscode/scripts/*.py bin/package/*.py
+
+      - name: Build packages (commit build)
+        run: python bin/package/build_package.py --all-langs --artifact-version "commit-${GITHUB_SHA::7}" --output-dir dist
+
+      - name: Lua syntax check (resolved sources, every language)
+        shell: bash
+        run: |
+          set -e
+          for z in dist/*.zip; do
+            d=$(mktemp -d); unzip -q "$z" -d "$d"
+            find "$d" -name '*.lua' -print0 | xargs -0 -n1 luac5.4 -p
+            echo "OK: $z"
+          done
+
+      - name: Validate manifests
+        run: for z in dist/*.zip; do python bin/package/validate_ethos_manifest_zip.py "$z"; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ github.sha }}
+          path: dist/*.zip

@@ -1,0 +1,15 @@
+{
+  "project": {
+    "name": "Mein Projekt"
+  },
+  "widget": {
+    "source": "Quelle",
+    "configure": "Quelle konfigurieren"
+  },
+  "tool": {
+    "greeting": "Begrüßung",
+    "say_it": "Ausgeben",
+    "print": "Drucken",
+    "default_greeting": "Hallo Ethos"
+  }
+}

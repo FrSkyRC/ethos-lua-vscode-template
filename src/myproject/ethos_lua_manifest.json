@@ -1,0 +1,10 @@
+{
+  "manifestVersion": 1,
+  "name": "My project",
+  "key": "com.example.myproject",
+  "version": "0.1.0",
+  "introduction": "Starter Ethos Lua project.",
+  "releaseNotes": { "format": "markdown", "content": "## 0.1.0\n- First version" },
+  "folder": "myproject",
+  "files": ["main.lua", "widget.lua", "tool.lua", "icon.png", "lib/*"]
+}

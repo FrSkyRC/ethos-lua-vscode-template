@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "bsongis.ethos",
+    "ms-python.python",
+    "ms-python.debugpy",
+    "sumneko.lua"
+  ]
+}

@@ -1,0 +1,13 @@
+[
+  { "label": "$(play) Deploy & Launch [SIM]", "task": "Deploy & Launch [SIM]" },
+  { "label": "$(play) Start simulator", "command": "ethos.start" },
+  { "label": "$(debug-stop) Stop simulator", "command": "ethos.stop" },
+  { "label": "", "separator": true },
+  { "label": "$(device-mobile) Deploy Radio [Fast]", "task": "Deploy Radio [Fast]" },
+  { "label": "$(output) Radio: Serial Debug", "task": "Radio: Serial Debug" },
+  { "label": "", "separator": true },
+  { "label": "$(settings-gear) Open controls", "command": "ethos.openControls" },
+  { "label": "$(broadcast) Open telemetry", "command": "ethos.openTelemetry" },
+  { "label": "$(device-camera) Screenshot", "command": "ethos.takeScreenshot" },
+  { "label": "$(arrow-swap) Change simulator", "command": ["ethos.setSimulator", "ethos.showMenu"] }
+]

@@ -1,0 +1,18 @@
+# Ethos simulators (created by the Ethos VS Code extension / deploys)
+simulators/
+
+# built packages
+dist/
+
+# deploy logs (e.g. i18n-unresolved.json)
+.vscode/logs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# compiled Lua left by copying to a simulator by hand
+*.luac
+
+.DS_Store
