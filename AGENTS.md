@@ -47,6 +47,8 @@ Simulator deploys go to `simulators/<board>_<protocol>@<release>/scripts/myproje
 
 **Testing in the simulator without VS Code:** use [FrSkyRC/ethos-tools](https://github.com/FrSkyRC/ethos-tools). The Claude Code plugin is `ethos-simulator@ethos-tools` (already enabled in `.claude/settings.json`), or run `simulation/run_wasm.js --serve --root-directory simulators/<board>_<protocol>@<release>` directly. Lua errors appear in `node run_wasm.js log`, not on screen. A fresh radio folder shows *Select language → Storage error → Model wizard* dialogs first.
 
+**Testing on a real radio:** `simulation/radio_remote.py` from the same repository drives a USB-connected radio with the same screenshot / `press` / `tap` loop, over the radio's serial port ([`radio_remote.md`](https://github.com/FrSkyRC/ethos-tools/blob/main/simulation/radio_remote.md)). It needs an Ethos 26 nightly from 2026-10-16 or later and `pip install pyserial hidapi`. Run `python radio_remote.py mode serial`, then `python radio_remote.py --serve`. A person must accept the connection prompt on the radio screen, so ask the user to start it. Only one program can use the serial port at a time: `quit` it before `deploy.py --radio --connect-only`, and the other way round. Don't send sticks or switches: the radio may be bound to a powered model.
+
 **Done means:** no errors in the simulator log after boot, the changed UI checked with screenshots, i18n keys present in every language, and `ci.yml`'s checks passing.
 
 ## Releases
