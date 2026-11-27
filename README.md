@@ -159,6 +159,8 @@ bin/package/              build_package.py, validate_ethos_manifest_zip.py
   extensions.json         recommended extensions
   scripts/                shared deploy tooling (don't edit)
 .github/workflows/        ci.yml, release.yml
+AGENTS.md, CLAUDE.md      rules and test instructions for AI coding agents
+.claude/settings.json     offers Claude Code the ethos plugin (simulator and radio control)
 simulators/               created by the Ethos extension (git-ignored)
 dist/                     built zips (git-ignored)
 ```

@@ -7,6 +7,10 @@ dist/
 # deploy logs (e.g. i18n-unresolved.json)
 .vscode/logs/
 
+# Claude Code: share settings.json (it enables the ethos-tools plugin), nothing else
+.claude/*
+!.claude/settings.json
+
 # Python
 __pycache__/
 *.pyc

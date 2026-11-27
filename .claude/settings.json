@@ -5,6 +5,6 @@
     }
   },
   "enabledPlugins": {
-    "ethos-simulator@ethos-tools": true
+    "ethos@ethos-tools": true
   }
 }
