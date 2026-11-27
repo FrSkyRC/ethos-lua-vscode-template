@@ -20,7 +20,9 @@ This is an **FrSky Ethos Lua** project built from the Ethos Lua VS Code template
 
 ## Ethos Lua rules (must follow)
 
-Reference: https://frskyrc.github.io/ethos-lua-doc/ (API: `/api/`, machine-readable index: `/api/api-index.json`, best practice: `/best-practice/`).
+Reference: https://frskyrc.github.io/ethos-lua-doc/ (API: `/api/`, machine-readable index: `/api/api-index.json`, best practice: `/best-practice/`, site map for agents: `/llms.txt`). Check that a function exists in `api-index.json` (it lists each one's signature and the Ethos version that added it) before calling it.
+
+Its source is [FrSkyRC/ethos-lua-doc](https://github.com/FrSkyRC/ethos-lua-doc): the pages are Markdown under `docs/` (`api/`, `best-practice/`, `guides/`, `cookbook/`, `tools/`), and complete working scripts are under `examples/cookbook/`. Clone or read it when the site is not reachable, or to copy a pattern from a working example.
 
 - **Hot paths** (`wakeup`, `paint`, event handlers): no per-call table, closure or string allocation; call `lcd.invalidate()` only when something visible changed; compare values at display precision.
 - **Paths:** relative paths only resolve while `main.lua` loads. Any file access from a callback uses `SCRIPTS:/myproject/...` (see `BASE` in `main.lua`).
@@ -45,9 +47,29 @@ Reference: https://frskyrc.github.io/ethos-lua-doc/ (API: `/api/`, machine-reada
 
 Simulator deploys go to `simulators/<board>_<protocol>@<release>/scripts/myproject/` (board/protocol/release from `.vscode/settings.json`).
 
-**Testing in the simulator without VS Code:** use [FrSkyRC/ethos-tools](https://github.com/FrSkyRC/ethos-tools). The Claude Code plugin is `ethos-simulator@ethos-tools` (already enabled in `.claude/settings.json`), or run `simulation/run_wasm.js --serve --root-directory simulators/<board>_<protocol>@<release>` directly. Lua errors appear in `node run_wasm.js log`, not on screen. A fresh radio folder shows *Select language → Storage error → Model wizard* dialogs first.
+### Testing in the Ethos simulator
 
-**Testing on a real radio:** `simulation/radio_remote.py` from the same repository drives a USB-connected radio with the same screenshot / `press` / `tap` loop, over the radio's serial port ([`radio_remote.md`](https://github.com/FrSkyRC/ethos-tools/blob/main/simulation/radio_remote.md)). It needs an Ethos 26 nightly from 2026-10-16 or later and `pip install pyserial hidapi`. Run `python radio_remote.py mode serial`, then `python radio_remote.py --serve`. A person must accept the connection prompt on the radio screen, so ask the user to start it. Only one program can use the serial port at a time: `quit` it before `deploy.py --radio --connect-only`, and the other way round. Don't send sticks or switches: the radio may be bound to a powered model.
+Agents can boot the Ethos WASM simulator, see its screen and operate it with touch, keys and the rotary encoder, using [FrSkyRC/ethos-tools](https://github.com/FrSkyRC/ethos-tools).
+
+- **Claude Code:** `.claude/settings.json` lists the `ethos-tools` marketplace and enables its `ethos` plugin, so Claude Code offers to install it when the folder is trusted. By hand: `/plugin marketplace add FrSkyRC/ethos-tools`, then `/plugin install ethos@ethos-tools`. (Before plugin version 0.3.0 it was `ethos-simulator`, and its skill `ethos-navigate`: a session that still has those names needs the plugin installed again.) The plugin has an MCP server, whose tools (`startSimulator`, `press`, `touch`, `screenshot`, `getLog`, `reload`, `writeFile`...) act on the simulator, and the `ethos:navigate` skill, which covers starting the simulator, the screenshot loop and the radio buttons. If neither is in the session, restart it, or read `simulation/skills/navigate/SKILL.md` from a clone of ethos-tools.
+- **Other agents:** run `simulation/run_wasm.js --serve` from a clone of ethos-tools. `simulation/run_wasm.md` lists the commands (`screenshot`, `press`, `touch`, `getLog`...).
+- **Deploy first** (command above), then mount `simulators/<board>_<protocol>@<release>/` as the radio's root directory (`rootDirectory` of `startSimulator`, or `--root-directory`). Don't run a second simulator on the same folder at the same time, for example the VS Code extension's.
+- **Simulator build:** `startSimulator(radio, release, rootDirectory)` (or `run_wasm.js --radio X18-EU`) downloads the simulator of any radio of an Ethos release, 26.2 or newer. The Ethos VS Code extension also caches the `<BOARD>_<PROTOCOL>.js` + `.wasm` pair in `<VS Code user dir>/globalStorage/bsongis.ethos/cache`.
+- **Boot dialogs:** a fresh radio folder shows *Select language*, *Storage error, default settings restored* and the *Create model* wizard; later boots can show a *Checklist warning*. Dismiss each one before any other input: menu keys are ignored while a dialog is open.
+- **After a redeploy:** `reload SCRIPTS` runs `main.lua` again but keeps modules cached in `package.loaded`. `reload ALL` starts a new Lua state, without restarting the simulator; the boot dialogs show again.
+- **Lua errors** appear in the output of `getLog`, not on screen. One call returns at most 200 lines, so read it after every boot and after each action that loads code.
+- **Smallest screen:** check layouts on an X18 (480x320) as well as the board in `.vscode/settings.json`. A model saved by a newer Ethos build will not load on an older one, so give a second board its own folder holding only a copy of `scripts/myproject`.
+
+### Testing on a real radio
+
+`simulation/radio_remote.py` from ethos-tools drives a USB-connected radio with the same screenshot / `press` / `touch` loop, over the radio's serial port ([`radio_remote.md`](https://github.com/FrSkyRC/ethos-tools/blob/main/simulation/radio_remote.md)). While it serves, the plugin's MCP tools act on the radio instead of the simulator.
+
+- **Firmware:** an Ethos 26 nightly from 2026-10-16 or later.
+- **Start:** `pip install pyserial hidapi`, `python radio_remote.py mode serial`, then `python radio_remote.py --serve` (port 8766).
+- **A person must accept** the connection prompt on the radio screen, and every new connection asks again. Ask the user to start the server and accept it.
+- **Never send `reload ALL` to a radio:** on an X20S with 26.2.0-RC11 it restarted the radio into its bootloader, off the serial port, until it was turned off and on again. Scripts load at boot, so after `writeFile` or a deploy, ask the user to restart the radio.
+- **One program on the serial port at a time:** `quit` `radio_remote.py` before `deploy.py --radio --connect-only`, and the other way round.
+- **No sticks, pots or switches:** the radio may be bound to a powered model.
 
 **Done means:** no errors in the simulator log after boot, the changed UI checked with screenshots, i18n keys present in every language, and `ci.yml`'s checks passing.
 
